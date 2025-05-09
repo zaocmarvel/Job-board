@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1>Find Your Dream Job</h1>
+        <p>Browse thousands of job listings and find the perfect match for your skills</p>
+        <a href="{{ url_for('jobs.browse') }}" class="btn btn-primary">Browse Jobs</a>
+        {% if current_user.is_authenticated and current_user.is_employer %}
+            <a href="{{ url_for('jobs.post_job') }}" class="btn btn-secondary">Post a Job</a>
+        {% endif %}
+    </div>
+</section>
+
+<section class="featured-jobs">
+    <h2>Featured Jobs</h2>
+    <div class="job-listings">
+        {% for job in jobs %}
+        <div class="job-card">
+            <h3><a href="{{ url_for('jobs.job_detail', job_id=job.id) }}">{{ job.title }}</a></h3>
+            <p class="company">{{ job.employer.company_name }}</p>
+            <p class="location">{{ job.location }}</p>
+            <div class="job-meta">
+                <span class="job-type">{{ job.job_type }}</span>
+                <span class="salary">{{ job.salary }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

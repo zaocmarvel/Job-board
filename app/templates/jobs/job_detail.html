@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="job-detail-container">
+    <div class="job-header">
+        <h1>{{ job.title }}</h1>
+        <p class="company">{{ job.employer.company_name }}</p>
+        <p class="location">{{ job.location }}</p>
+        <div class="job-meta">
+            <span class="job-type">{{ job.job_type }}</span>
+            <span class="salary">{{ job.salary }}</span>
+            <span class="date">Posted on {{ job.date_posted.strftime('%b %d, %Y') }}</span>
+        </div>
+    </div>
+
+    <div class="job-content">
+        <div class="job-description">
+            <h3>Job Description</h3>
+            <p>{{ job.description }}</p>
+        </div>
+
+        {% if current_user.is_authenticated %}
+            {% if current_user.is_employer and current_user.id == job.user_id %}
+                <div class="employer-actions">
+                    <a href="#" class="btn btn-primary">Edit Job</a>
+                    <a href="#" class="btn btn-danger">Delete Job</a>
+                </div>
+            {% elif not current_user.is_employer %}
+                {% if not has_applied %}
+                <div class="apply-form">
+                    <h3>Apply for this Position</h3>
+                    <form method="POST" action="{{ url_for('jobs.apply', job_id=job.id) }}" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="message">Cover Letter</label>
+                            <textarea id="message" name="message" rows="5" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="resume">Upload Resume</label>
+                            <input type="file" id="resume" name="resume" accept=".pdf,.doc,.docx" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit Application</button>
+                    </form>
+                </div>
+                {% else %}
+                <div class="applied-notice">
+                    <p>You've already applied for this position.</p>
+                    <a href="{{ url_for('jobs.dashboard') }}" class="btn">View Your Applications</a>
+                </div>
+                {% endif %}
+            {% endif %}
+        {% else %}
+        <div class="auth-prompt">
+            <p>Please <a href="{{ url_for('auth.login') }}">login</a> to apply for this position.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

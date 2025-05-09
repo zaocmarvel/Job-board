@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h1>Your Dashboard</h1>
+    
+    {% if is_employer %}
+        <section class="employer-section">
+            <h2>Your Job Postings</h2>
+            
+            {% if jobs %}
+            <div class="job-listings">
+                {% for job in jobs %}
+                <div class="job-card">
+                    <h3><a href="{{ url_for('jobs.job_detail', job_id=job.id) }}">{{ job.title }}</a></h3>
+                    <div class="job-meta">
+                        <span>Posted: {{ job.date_posted.strftime('%b %d, %Y') }}</span>
+                        <span>Applications: {{ job.applications|length }}</span>
+                    </div>
+                    <div class="job-actions">
+                        <a href="{{ url_for('jobs.job_detail', job_id=job.id) }}" class="btn btn-small">View</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p>You haven't posted any jobs yet.</p>
+            <a href="{{ url_for('jobs.post_job') }}" class="btn btn-primary">Post Your First Job</a>
+            {% endif %}
+            
+            <h2>Recent Applications</h2>
+            {% if applications %}
+            <div class="applications-list">
+                {% for application in applications %}
+                <div class="application-card">
+                    <h4>{{ application.job.title }}</h4>
+                    <p>Applicant: {{ application.applicant.username }}</p>
+                    <p>Applied: {{ application.date_applied.strftime('%b %d, %Y') }}</p>
+                    <a href="{{ application.resume_url }}" target="_blank" class="btn btn-small">View Resume</a>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p>No applications yet.</p>
+            {% endif %}
+        </section>
+    {% else %}
+        <section class="applicant-section">
+            <h2>Your Applications</h2>
+            
+            {% if applications %}
+            <div class="applications-list">
+                {% for application in applications %}
+                <div class="application-card">
+                    <h3><a href="{{ url_for('jobs.job_detail', job_id=application.job.id) }}">{{ application.job.title }}</a></h3>
+                    <p>Company: {{ application.job.employer.company_name }}</p>
+                    <p>Applied: {{ application.date_applied.strftime('%b %d, %Y') }}</p>
+                    <p>Status: Pending</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p>You haven't applied to any jobs yet.</p>
+            <a href="{{ url_for('jobs.browse') }}" class="btn btn-primary">Browse Jobs</a>
+            {% endif %}
+        </section>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="browse-container">
+    <div class="search-filters">
+        <form method="GET" action="{{ url_for('jobs.browse') }}">
+            <div class="search-bar">
+                <input type="text" name="query" placeholder="Job title or keywords" value="{{ query }}">
+                <button type="submit"><i class="fas fa-search"></i></button>
+            </div>
+            
+            <div class="filter-group">
+                <label for="location">Location</label>
+                <input type="text" name="location" placeholder="Any location" value="{{ location }}">
+            </div>
+            
+            <div class="filter-group">
+                <label for="type">Job Type</label>
+                <select name="type">
+                    <option value="">All Types</option>
+                    <option value="Full-time" {% if job_type == 'Full-time' %}selected{% endif %}>Full-time</option>
+                    <option value="Part-time" {% if job_type == 'Part-time' %}selected{% endif %}>Part-time</option>
+                    <option value="Contract" {% if job_type == 'Contract' %}selected{% endif %}>Contract</option>
+                    <option value="Internship" {% if job_type == 'Internship' %}selected{% endif %}>Internship</option>
+                    <option value="Remote" {% if job_type == 'Remote' %}selected{% endif %}>Remote</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Apply Filters</button>
+        </form>
+    </div>
+    
+    <div class="job-listings">
+        {% for job in jobs.items %}
+        <div class="job-card">
+            <h3><a href="{{ url_for('jobs.job_detail', job_id=job.id) }}">{{ job.title }}</a></h3>
+            <p class="company">{{ job.employer.company_name }}</p>
+            <p class="location">{{ job.location }}</p>
+            <div class="job-meta">
+                <span class="job-type">{{ job.job_type }}</span>
+                <span class="salary">{{ job.salary }}</span>
+                <span class="date">{{ job.date_posted.strftime('%b %d, %Y') }}</span>
+            </div>
+        </div>
+        {% endfor %}
+        
+        <div class="pagination">
+            {% if jobs.has_prev %}
+                <a href="{{ url_for('jobs.browse', page=jobs.prev_num, query=query, location=location, type=job_type) }}" class="btn">Previous</a>
+            {% endif %}
+            
+            {% for page_num in jobs.iter_pages() %}
+                {% if page_num %}
+                    <a href="{{ url_for('jobs.browse', page=page_num, query=query, location=location, type=job_type) }}" class="btn {% if jobs.page == page_num %}active{% endif %}">{{ page_num }}</a>
+                {% else %}
+                    <span class="ellipsis">...</span>
+                {% endif %}
+            {% endfor %}
+            
+            {% if jobs.has_next %}
+                <a href="{{ url_for('jobs.browse', page=jobs.next_num, query=query, location=location, type=job_type) }}" class="btn">Next</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

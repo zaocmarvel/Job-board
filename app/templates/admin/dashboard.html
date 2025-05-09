@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <h2>Admin Dashboard</h2>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>{{ total_users }}</h3>
+            <p>Total Users</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ total_jobs }}</h3>
+            <p>Total Jobs</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ total_applications }}</h3>
+            <p>Total Applications</p>
+        </div>
+    </div>
+    
+    <div class="recent-jobs">
+        <h3>Recent Job Postings</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Company</th>
+                    <th>Date Posted</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for job in recent_jobs %}
+                <tr>
+                    <td>{{ job.title }}</td>
+                    <td>{{ job.employer.company_name }}</td>
+                    <td>{{ job.date_posted.strftime('%b %d, %Y') }}</td>
+                    <td>
+                        <a href="{{ url_for('jobs.job_detail', job_id=job.id) }}" class="btn btn-sm">View</a>
+                        <a href="#" class="btn btn-sm btn-danger">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

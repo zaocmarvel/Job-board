@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth-container">
+    <h2>Sign Up</h2>
+    <form method="POST" action="{{ url_for('auth.signup') }}">
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <div class="form-group employer-option">
+            <input type="checkbox" id="is_employer" name="is_employer">
+            <label for="is_employer">I'm an employer</label>
+        </div>
+        <div class="form-group company-name" id="company-name-group" style="display:none;">
+            <label for="company_name">Company Name</label>
+            <input type="text" id="company_name" name="company_name">
+        </div>
+        <button type="submit" class="btn btn-primary">Sign Up</button>
+    </form>
+    <p>Already have an account? <a href="{{ url_for('auth.login') }}">Login</a></p>
+</div>
+
+<script>
+document.getElementById('is_employer').addEventListener('change', function() {
+    document.getElementById('company-name-group').style.display = 
+        this.checked ? 'block' : 'none';
+});
+</script>
+{% endblock %}
