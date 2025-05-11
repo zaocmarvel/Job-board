@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 import os
@@ -7,7 +7,9 @@ db = SQLAlchemy()
 login_manager = LoginManager()
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__,
+               template_folder='templates',  # Explicit template path
+               static_folder='static')       # Explicit static path
     
     # Configuration
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key')
@@ -18,10 +20,20 @@ def create_app():
     db.init_app(app)
     login_manager.init_app(app)
     
-    # Register blueprints (we'll create these next)
-    from .auth import auth
-    from .jobs import jobs
-    app.register_blueprint(auth)
-    app.register_blueprint(jobs)
+    # Register blueprints with URL prefixes
+    from .auth.routes import auth_bp
+    from .jobs.routes import jobs_bp
+    
+    app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(jobs_bp, url_prefix='/jobs')
+    
+    # Add essential routes
+    @app.route('/')
+    def home():
+        return render_template('jobs/index.html')  # Or redirect to login
+    
+    @app.route('/healthcheck')
+    def healthcheck():
+        return 'OK', 200
     
     return app
